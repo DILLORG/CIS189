@@ -11,8 +11,10 @@ NUM_TEST = 3
 
 def average(scores):
     totalScore = 0.0
+
     for score in scores:
         totalScore += score
+
     return float(totalScore / NUM_TEST)
 
 
