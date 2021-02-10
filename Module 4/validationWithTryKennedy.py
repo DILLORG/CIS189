@@ -18,19 +18,25 @@ def average(scores):
     return float(totalScore / NUM_TEST)
 
 
+if __name__ == '__main__':
+    scores = []
+    count = 0
 
-scores = []
-count = 0
-while count < NUM_TEST:
+    while count < NUM_TEST:
 
-    try:
-        test = float(input(f"Please enter score for test {count +1}> "))
-        scores.append(test)
-        count+=1
-    except ValueError:
-        print("Invalid score")
+        try:
+            test = float(input(f"Please enter score for test {count +1}> "))
+
+            if test < 0:
+                raise ValueError
+            else:
+                scores.append(test)
+                count+=1
+
+        except ValueError:
+            print("Invalid score!")
 
 
-averageScore = average(scores)
+    averageScore = average(scores)
 
-print(f"The student's average score is {averageScore:.1f} ")
+    print(f"The student's average score is {averageScore:.1f} ")
