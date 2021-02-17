@@ -1,5 +1,5 @@
 """
-Program: couponCalculations.py
+Program: couponCalculations
 Author: Dylan Kennedy
 Last date modified: 02/03/2021
 

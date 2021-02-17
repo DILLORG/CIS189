@@ -1,5 +1,5 @@
 """
-Program: basicIfElif.py
+Program: basicIfElif
 Author: Dylan Kennedy
 Last date modified: 02/02/2021
 

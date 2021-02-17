@@ -1,5 +1,5 @@
 """
-Program: casting.py
+Program: casting
 Author: Dylan Kennedy
 Last date modified: 01/26/2021
 

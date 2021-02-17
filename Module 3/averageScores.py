@@ -1,5 +1,5 @@
 """
-Program: averageScores.py
+Program: averageScores
 Author: Dylan Kennedy
 Last date modified: 02/02/2021
 

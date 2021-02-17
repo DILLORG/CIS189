@@ -1,5 +1,5 @@
 """
-Program: validationWithTryKennedy.py
+Program: validationWithTry
 Author: Dylan Kennedy
 Last date modified: 02/09/2021
 
