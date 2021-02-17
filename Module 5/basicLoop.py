@@ -1,5 +1,5 @@
 """
-Program: basicLoop.py
+Program: basicLoop
 Author: Dylan Kennedy
 Last date modified: 02/17/2021
 
