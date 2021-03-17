@@ -1,5 +1,5 @@
 """
-Program: driver
+Program: favoriteNeal
 Author: Dylan Kennedy
 Last date modified: 03/17/2021
 
@@ -39,20 +39,21 @@ class Window(tk.Tk):
         choice = tk.StringVar()
 
         """
-        For the length of meals set the Radiobutton row to the to the current
+        For the length of meals set the Radiobutton's row to the to the current
         value of x. Set the text next to the radio button to the meal type.
-        Set the variable to choice. Set the command to a on_choice function.
-        When A Radiobutton is selected the coresponding value is
-        passed to the on_choice function. I choose over checkbuttons because
-        logically a person can only have one favorite meal.
+        Set the variable to choice. Set the command to the on_choice function.
+        When A Radiobutton is selected the corresponding value is
+        passed to the on_choice function. I choose Radiobuttons over
+        Checkbuttons because logically a person can only have one
+        favorite meal.
         """
         for x in range(len(meals)):
-            # Programatically decalare the Radiobuttons.
+            # Programmatically declare the Radiobuttons.
             rb = tk.Radiobutton(self, text=meals[x], variable=choice,
                                 value=meals[x], font=self.font,
                                 command=lambda: self.on_choice(choice.get()))
             # Set the row.
-            rb.grid(row=x)
+            rb.grid(row=x+1)
 
         # Outputlabel
         self.faveMealLbl = tk.Label(self, text="Waiting", font=self.font)
@@ -65,7 +66,7 @@ class Window(tk.Tk):
 
     def on_exit_click(self):
         """
-        Closes program when binded button is clicked.
+        Closes program when bound button is clicked.
         :params none
         :returns none
         """
@@ -77,7 +78,7 @@ class Window(tk.Tk):
         :params none
         :returns none
         """
-        self.faveMealLbl.config(text=f"You choose {value}")
+        self.faveMealLbl.config(text=f"You chose {value}")
 
 
 if __name__ == '__main__':
