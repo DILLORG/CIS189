@@ -10,6 +10,7 @@ console using a for loop.
 
 from re import match
 
+
 def decoder_ring(prompt, error, pattern):
     """
     Check that the users input matches a given pattern.

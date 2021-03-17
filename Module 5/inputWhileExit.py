@@ -13,6 +13,7 @@ from re import match
 listOfNums = []
 SENTINEL = "(Q|q|Quit|quit|QUIT)"
 
+
 def print_nums():
     """
     Print all numbers stored in list.
@@ -30,10 +31,7 @@ def decoder_ring(prompt, error, pattern, cancel):
     :params prompt for user, error to print to console,  a regex pattern
     :return validated string.
     """
-    while True:print(score_input('Test 1', 70))
-    print(score_input('Test 2', -2))
-    print(score_input('Test 3', 1000))
-    print(score_input('Test 4', 'Dfdsfsd'))
+    while True:
         var = input(prompt)
 
         if(match(pattern, var)):
@@ -47,18 +45,18 @@ def decoder_ring(prompt, error, pattern, cancel):
         else:
             print(error)
 
+
 def main():
     value = ''
     while value != SENTINEL:
 
         # Prompt user for number in range 1-100. Repeat if not in range.
         value = int(decoder_ring(f"\nPlease enter a number between 1 and 100 or Q to quit> ",
-                             "\nInvalid!", "([1-9]|[1-9][0-9]|100|)$",
-                             f"{SENTINEL}"))
+                                 "\nInvalid!", "([1-9]|[1-9][0-9]|100|)$",
+                                 f"{SENTINEL}"))
         print(f"Added {value} to list")
         # Add number to list.
         listOfNums.append(value)
-
 
 
 if __name__ == '__main__':

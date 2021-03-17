@@ -30,5 +30,5 @@ print("\nNumbers sorted in decending order and between 33 and 99")
 for num in randomNums:
 
     # Number is odd and between the range of 33 and 99.
-    if (num % 2) != 0 and 33 <= num <=99  :
+    if (num % 2) != 0 and 33 <= num <= 99:
         print(num)

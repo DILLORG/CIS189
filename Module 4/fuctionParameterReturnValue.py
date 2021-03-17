@@ -6,6 +6,9 @@ Last date modified: 02/09/2021
 Prompts the user for a string and the amount of times they would like to see
 the string repeated.
 """
+from re import match
+
+
 def decoder_ring(prompt, error, pattern):
     """
     Check that the user's input matches a given pattern if not repeat.
@@ -22,6 +25,7 @@ def decoder_ring(prompt, error, pattern):
         else:
             print(error)
 
+
 def multipy_string(message, numTimes):
     """
     Return the message repeated the amount of times specified.
@@ -31,6 +35,7 @@ def multipy_string(message, numTimes):
 
     return message * numTimes
 
+
 def main():
     message = input("\nPlease enter the desired message> ")
     try:
@@ -38,6 +43,7 @@ def main():
         print(multipy_string(message, numTimes))
     except ValueError:
         print("Invalid input!")
+
 
 if __name__ == "__main__":
     assert (multipy_string("Python", 4) == "PythonPythonPythonPython")

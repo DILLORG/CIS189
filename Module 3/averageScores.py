@@ -9,6 +9,7 @@ to calculate the users average score.
 
 from re import match
 
+
 def decoder_ring(prompt, error, pattern):
 
     while True:
@@ -19,8 +20,6 @@ def decoder_ring(prompt, error, pattern):
 
         else:
             print(error)
-
-
 
 
 totalScore = 0
@@ -42,7 +41,7 @@ NUM_TEST_SCORES = 5
 # for x in the range of scores.
 for x in range(NUM_TEST_SCORES):
     score = int(decoder_ring(f"Please enter the score for test {x + 1}> ",
-                         "Pleae enter valid score! \n", "^\d+$"))
+                             "Pleae enter valid score! \n", "^\d+$"))
 
     # add score to totalScore
     totalScore += score

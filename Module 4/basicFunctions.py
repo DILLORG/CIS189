@@ -8,6 +8,7 @@ to ask the user to input their name hours work and pay rate.
 """
 from re import match
 
+
 def decoder_ring(prompt, error, pattern):
     """
     Check that the user's input matches a given pattern if not repeat.
@@ -37,17 +38,17 @@ def hourly_employee_input():
 
     hoursWorked = int(decoder_ring("Please enter the hours you have worked this week> ",
                                    "Please enter a number in the range 0-80!",
-                                    "([1-9]|[1-7][0-9]|80)$"))
+                                   "([1-9]|[1-7][0-9]|80)$"))
 
     payRate = float(decoder_ring("Please enter your hourly pay rate> $ ",
-                                  "Please enter a valid pay rate!",
-                                  "^[1-9]\d*(\.\d{2})?$"))
+                                 "Please enter a valid pay rate!",
+                                 "^[1-9]\d*(\.\d{2})?$"))
 
     grossPay = weekly_pay(payRate, hoursWorked)
 
-
     return f""" \nName: {name}\nHours Worked: {hoursWorked}
                 \nPay Rate: ${payRate:.2f} \nGross Pay: ${grossPay:.2f}"""
+
 
 def weekly_pay(payRate, hoursWorked):
     """Calculate the weekly pay rate.

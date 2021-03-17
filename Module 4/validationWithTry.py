@@ -9,6 +9,7 @@ to calculate the student's average score.
 
 NUM_TEST = 3
 
+
 def average(scores):
     totalScore = 0.0
 
@@ -31,11 +32,10 @@ if __name__ == '__main__':
                 raise ValueError
             else:
                 scores.append(test)
-                count+=1
+                count += 1
 
         except ValueError:
             print("Invalid score!")
-
 
     averageScore = average(scores)
 

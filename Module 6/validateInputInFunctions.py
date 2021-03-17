@@ -7,6 +7,7 @@ The purpose of this program is to validate that the test score is
 in between the range 0 and 100 and is an integer.
 """
 
+
 def score_input(testName, testScore=-1):
     """
     Determine if a given score is withing the range 0-100 if not return an
@@ -17,12 +18,11 @@ def score_input(testName, testScore=-1):
 
     testScore = int(testScore)
 
-    if(0 <= testScore <=100):
+    if(0 <= testScore <= 100):
         return f"Score for {testName} is {testScore}"
 
     else:
         return "Invalid test score!"
-
 
 
 def main():
@@ -40,6 +40,7 @@ def main():
 
     except ValueError:
         print("ValueError encounterd")
+
 
 if __name__ == '__main__':
     main()
