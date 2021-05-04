@@ -36,11 +36,11 @@ class Player:
 
     @name.setter
     def name(self, value):
-        self.__name = name
+        self.__name = value
 
     @property
     def type(self):
-        return self.__name
+        return self.__type
 
     @type.setter
     def type(self, value):
