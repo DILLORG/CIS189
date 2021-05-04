@@ -1,4 +1,6 @@
-from pickle import load, dump
+from lifeExperience.gui import MainWindow
 
-def load_profile(fileName):
-    return player
+
+if __name__ == '__main__':
+    app = MainWindow()
+    app.run_app()

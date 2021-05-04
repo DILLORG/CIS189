@@ -7,6 +7,7 @@
     <property name="title" translatable="yes">Life Experience</property>
     <property name="default-width">440</property>
     <property name="default-height">250</property>
+    <signal name="delete-event" handler="close_app" swapped="no"/>
     <child>
       <object class="GtkBox" id="mainGrid">
         <property name="visible">True</property>
@@ -125,6 +126,20 @@
                     <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="editButton">
+                    <property name="label" translatable="yes">Edit Profile</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <signal name="clicked" handler="edit_player" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>

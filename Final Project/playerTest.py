@@ -59,14 +59,13 @@ class PlayerTest(unittest.TestCase):
     def test_purchase_shop_item(self):
         self.testPlayer.add_gold(500)
         self.testPlayer.purchase_shop_item('Bike')
-        self.assertEqual(self.testPlayer.gold(), 0)
+        self.assertEqual(self.testPlayer.gold, 0)
 
     def test_player_save_profile(self):
         fileName = 'playerTest.profile'
 
-        newPlayer = Player()
         with open(fileName, 'wb') as file:
-            dump(newPlayer, file)
+            dump(self.testPlayer, file)
 
         with open(fileName, 'rb') as file:
             newPlayer = load(file)

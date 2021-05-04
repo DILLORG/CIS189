@@ -4,6 +4,7 @@ from .exceptions import QuestExistError
 from .exceptions import DuplicateSkillError
 from .exceptions import SkillExistError
 from .exceptions import ShopItemExistError
+from .exceptions import NotEnoughGoldError
 
 
 class Player:
@@ -16,7 +17,7 @@ class Player:
     quest -- Holds all players assined quest.
     """
 
-    def __init__(self, name, type, difficulty=1):
+    def __init__(self, name='', type='', difficulty=1):
         """
         Constructs Player Object.
         :params players name and difficulty
@@ -33,13 +34,25 @@ class Player:
     def name(self):
         return self.__name
 
+    @name.setter
+    def name(self, value):
+        self.__name = name
+
     @property
     def type(self):
         return self.__name
 
+    @type.setter
+    def type(self, value):
+        self.__type = value
+
     @property
     def difficulty(self):
         return self.__difficulty
+
+    @difficulty.setter
+    def difficulty(self, value):
+        self.__difficulty = value
 
     @property
     def skills(self):
@@ -94,6 +107,9 @@ class Player:
     def purchase_shop_item(self, itemName):
         if itemName not in self.__shop.keys():
             raise ShopItemExistError(f"{itemName} has not been added")
+
+        elif self.__gold < self.__shop[itemName]:
+            raise NotEnoughGoldError(f"{itemName} is to Expesive")
 
         self.__gold -= self.__shop[itemName]
 
