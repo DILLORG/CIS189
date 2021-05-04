@@ -2,6 +2,7 @@ from lifeExperience.player import Player
 from lifeExperience.exceptions import DuplicateQuestError, DuplicateSkillError
 from lifeExperience.exceptions import QuestExistError, SkillExistError
 from lifeExperience.exceptions import ShopItemExistError
+from lifeExperience.exceptions import NotEnoughGoldError
 from pickle import load, dump
 import unittest
 
@@ -14,6 +15,7 @@ class PlayerTest(unittest.TestCase):
         self.testPlayer.add_quest('Excersise', 500, 'Strength', 'Go Excersise', '01-01-01')
         self.testPlayer.add_quest('Walk', 50, 'Strength', 'Go for a walk', '01-01-01')
         self.testPlayer.complete_quest('Walk')
+        self.testPlayer.add_shop_item('Bike', 500)
 
     def tearDown(self):
         del self.testPlayer
@@ -46,11 +48,18 @@ class PlayerTest(unittest.TestCase):
         actual = self.testPlayer.get_skill_level('Strength')
         self.assertEqual(expected, actual)
 
-    def test_add_shop_item_no_item(self):
-
+    def test_purchase_shop_item_no_item(self):
         with self.assertRaises(ShopItemExistError):
             self.testPlayer.purchase_shop_item('Guitar')
 
+    def test_purchase_shop_item_to_expensive(self):
+        with self.assertRaises(NotEnoughGoldError):
+            self.testPlayer.purchase_shop_item('Bike')
+
+    def test_purchase_shop_item(self):
+        self.testPlayer.add_gold(500)
+        self.testPlayer.purchase_shop_item('Bike')
+        self.assertEqual(self.testPlayer.gold(), 0)
 
     def test_player_save_profile(self):
         fileName = 'playerTest.profile'

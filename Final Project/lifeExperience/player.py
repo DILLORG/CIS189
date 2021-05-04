@@ -3,6 +3,7 @@ from .exceptions import DuplicateQuestError
 from .exceptions import QuestExistError
 from .exceptions import DuplicateSkillError
 from .exceptions import SkillExistError
+from .exceptions import ShopItemExistError
 
 
 class Player:
@@ -27,6 +28,34 @@ class Player:
         self.__quests = {}
         self.__shop = {}
         self.__gold = 0
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def type(self):
+        return self.__name
+
+    @property
+    def difficulty(self):
+        return self.__difficulty
+
+    @property
+    def skills(self):
+        return self.__skillLevel
+
+    @property
+    def quests(self):
+        return self.__quests
+
+    @property
+    def shop(self):
+        return self.__shop
+
+    @property
+    def gold(self):
+        return self.__gold
 
     def add_quest(self, questName, xp, skill, description, dueDate):
         """
@@ -60,10 +89,13 @@ class Player:
         self.__gold += value
 
     def add_shop_item(self, itemName, price):
-        pass
+        self.__shop.update({itemName: price})
 
     def purchase_shop_item(self, itemName):
-        pass
+        if itemName not in self.__shop.keys():
+            raise ShopItemExistError(f"{itemName} has not been added")
+
+        self.__gold -= self.__shop[itemName]
 
     def add_skill(self, skillName):
         """
@@ -87,30 +119,6 @@ class Player:
             raise SkillExistError(f"{skillName} is not a skill")
 
         return self.__skillLevel[skillName]
-
-    def get_quests(self):
-        """
-        Get all assined quest.
-        :params none.
-        :returns dictionary of quest objects.
-        """
-        return self.__quests
-
-    def get_skills(self):
-        """
-        Get all skills.
-        :params none.
-        :returns dictionary of skill and levels.
-        """
-        return self.__skillLevel
-
-    def get_shop_items(self):
-        """
-        Get all shop items.
-        :params none.
-        :returns dictionary of shop items.
-        """
-        return self.__shopItems
 
     def __str__(self):
         return f"Player({self.__name}, {self.__skillLevel}, {self.__quests.keys()})"
