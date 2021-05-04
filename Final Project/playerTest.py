@@ -1,14 +1,15 @@
 from lifeExperience.player import Player
 from lifeExperience.exceptions import DuplicateQuestError, DuplicateSkillError
 from lifeExperience.exceptions import QuestExistError, SkillExistError
-from pickle import load
+from lifeExperience.exceptions import ShopItemExistError
+from pickle import load, dump
 import unittest
 
 
 class PlayerTest(unittest.TestCase):
 
     def setUp(self):
-        self.testPlayer = Player('Dylan')
+        self.testPlayer = Player('Dylan', 'Programer')
         self.testPlayer.add_skill('Strength')
         self.testPlayer.add_quest('Excersise', 500, 'Strength', 'Go Excersise', '01-01-01')
         self.testPlayer.add_quest('Walk', 50, 'Strength', 'Go for a walk', '01-01-01')
@@ -45,11 +46,19 @@ class PlayerTest(unittest.TestCase):
         actual = self.testPlayer.get_skill_level('Strength')
         self.assertEqual(expected, actual)
 
+    def test_add_shop_item_no_item(self):
+
+        with self.assertRaises(ShopItemExistError):
+            self.testPlayer.purchase_shop_item('Guitar')
+
+
     def test_player_save_profile(self):
         fileName = 'playerTest.profile'
-        self.testPlayer.save_profile(fileName)
 
         newPlayer = Player()
+        with open(fileName, 'wb') as file:
+            dump(newPlayer, file)
+
         with open(fileName, 'rb') as file:
             newPlayer = load(file)
 

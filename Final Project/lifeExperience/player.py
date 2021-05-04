@@ -3,7 +3,6 @@ from .exceptions import DuplicateQuestError
 from .exceptions import QuestExistError
 from .exceptions import DuplicateSkillError
 from .exceptions import SkillExistError
-from pickle import dump
 
 
 class Player:
@@ -16,15 +15,18 @@ class Player:
     quest -- Holds all players assined quest.
     """
 
-    def __init__(self, name='', difficulty=1):
+    def __init__(self, name, type, difficulty=1):
         """
         Constructs Player Object.
         :params players name and difficulty
         """
         self.__name = name
+        self.__type = type
         self.__difficulty = difficulty
         self.__skillLevel = {'Player': 0}
         self.__quests = {}
+        self.__shop = {}
+        self.__gold = 0
 
     def add_quest(self, questName, xp, skill, description, dueDate):
         """
@@ -53,6 +55,15 @@ class Player:
         quest = self.__quests.pop(questName)
         self.__skillLevel[quest.skill] += quest.xp
         self.__skillLevel['Player'] += (1 * self.__difficulty)
+
+    def add_gold(self, value):
+        self.__gold += value
+
+    def add_shop_item(self, itemName, price):
+        pass
+
+    def purchase_shop_item(self, itemName):
+        pass
 
     def add_skill(self, skillName):
         """
@@ -93,19 +104,16 @@ class Player:
         """
         return self.__skillLevel
 
-    def save_profile(self, fileName):
+    def get_shop_items(self):
         """
-        Save Player's profile to a given file name with pickle
-        :params fileName
-        :returns none.
+        Get all shop items.
+        :params none.
+        :returns dictionary of shop items.
         """
-        with open(fileName, 'wb') as file:
-            dump(self, file)
+        return self.__shopItems
 
     def __str__(self):
         return f"Player({self.__name}, {self.__skillLevel}, {self.__quests.keys()})"
 
     def __repr__(self):
         return f"'Player({self.__name}, {self.__skillLevel}, {self.__quests.keys()})'"
-
-list = [1, 2, 3]
