@@ -29,13 +29,23 @@ class MainWindow(Gtk.Window):
         self.__goldLbl = __builder.get_object('goldLbl')
         self.__typeLbl = __builder.get_object('typeLbl')
         self.__window = __builder.get_object('mainWindow')
+
         self.__editPlayer = __builder.get_object('editDialog')
         self.__nameTb = __builder.get_object('nameTb')
         self.__typeTb = __builder.get_object('typeTb')
+
+        self.__questDialog = __builder.get_object('questDialog')
+        self.__questNameTb = __builder.get_object('questNameTb')
+        self.__xpTb = __builder.get_object('xpTb')
+        self.__dueDateTb = __builder.get_object('dueDateTb')
+        self.__skillStore = Gtk.ListStore(str)
+        self.__skillCb = __builder.get_object('skillCb')
+        self.__skillCb.set_model(self.__skillStore)
+
         self.__window.show_all()
 
         self.load_profile()
-        self.update_profile()
+        self.update()
 
     def load_profile(self):
         try:
@@ -48,6 +58,9 @@ class MainWindow(Gtk.Window):
     def edit_player(self, widget):
         self.__editPlayer.show()
 
+    def add_quest(self, widget):
+        self.__questDialog.show()
+
     def on_editDialog_response(self, widget):
         response = Gtk.Buildable.get_name(widget)
         if response == "submitEdit":
@@ -59,15 +72,21 @@ class MainWindow(Gtk.Window):
             self.__typeTb.set_text('')
         self.__editPlayer.hide()
 
-    def update_profile(self):
+    def update(self):
         self.__nameLbl.set_text(self.__player.name)
         self.__levelLbl.set_text(str(self.__player.get_skill_level('Player')))
         self.__goldLbl.set_text(str(self.__player.gold))
         self.__typeLbl.set_text(str(self.__player.type))
+        skills = self.__player.get_skills()
+        for skill in skills.keys():
+            self.__skillStore.append([skill])
 
     def save_profile(self):
         with open(PROFILE, 'wb') as file:
             dump(self.__player, file)
+
+    def add_skill(self, widget):
+        print("Add Skill")
 
     def close_app(self, widget, event):
         """

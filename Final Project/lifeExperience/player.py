@@ -25,7 +25,7 @@ class Player:
         self.__name = name
         self.__type = type
         self.__difficulty = difficulty
-        self.__skillLevel = {'Player': 0}
+        self.__skills = {'Player': 1}
         self.__quests = {}
         self.__shop = {}
         self.__gold = 0
@@ -54,9 +54,8 @@ class Player:
     def difficulty(self, value):
         self.__difficulty = value
 
-    @property
-    def skills(self):
-        return self.__skillLevel
+    def get_skills(self):
+        return self.__skills
 
     @property
     def quests(self):
@@ -95,8 +94,8 @@ class Player:
             raise QuestExistError(f"{questName} is not an assined Quest")
 
         quest = self.__quests.pop(questName)
-        self.__skillLevel[quest.skill] += quest.xp
-        self.__skillLevel['Player'] += (1 * self.__difficulty)
+        self.__skills[quest.skill] += quest.xp
+        self.__skills['Player'] += (1 * self.__difficulty)
 
     def add_gold(self, value):
         self.__gold += value
@@ -119,10 +118,10 @@ class Player:
         :params skillName
         :returns none.
         """
-        if skillName in self.__skillLevel.keys():
+        if skillName in self.__skills.keys():
             raise DuplicateSkillError(f"{skillName} has already been added")
 
-        self.__skillLevel.update({skillName: 0})
+        self.__skills.update({skillName: 0})
 
     def get_skill_level(self, skillName):
         """
@@ -131,13 +130,13 @@ class Player:
         :params skillName
         :returns skillLevel
         """
-        if skillName not in self.__skillLevel.keys():
+        if skillName not in self.__skills.keys():
             raise SkillExistError(f"{skillName} is not a skill")
 
-        return self.__skillLevel[skillName]
+        return self.__skills[skillName]
 
     def __str__(self):
-        return f"Player({self.__name}, {self.__skillLevel}, {self.__quests.keys()})"
+        return f"Player({self.__name}, {self.__skill}, {self.__quests.keys()})"
 
     def __repr__(self):
-        return f"'Player({self.__name}, {self.__skillLevel}, {self.__quests.keys()})'"
+        return f"'Player({self.__name}, {self.__skills}, {self.__quests.keys()})'"
