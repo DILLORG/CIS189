@@ -1,9 +1,8 @@
 class Quest:
-    def __init__(self, name, xp, skill, description, dueDate):
+    def __init__(self, name, gold, skill, dueDate):
         self.__name = name
-        self.__xp = xp
+        self.__gold = gold
         self.__skill = skill
-        self.__description = description
         self.__dueDate = dueDate
 
     @property
@@ -11,16 +10,12 @@ class Quest:
         return self.__name
 
     @property
-    def xp(self):
-        return self.__xp
+    def gold(self):
+        return self.__gold
 
     @property
     def skill(self):
         return self.__skill
-
-    @property
-    def description(self):
-        return self.__description
 
     @property
     def dueDate(self):
