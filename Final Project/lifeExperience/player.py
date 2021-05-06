@@ -100,6 +100,11 @@ class Player:
     def add_gold(self, value):
         self.__gold += value
 
+    def remove_gold(self, value):
+        if value > self.__gold:
+            raise NotEnoughGoldError
+        self.__gold -= value
+
     def add_shop_item(self, itemName, price):
         self.__shop.update({itemName: price})
 

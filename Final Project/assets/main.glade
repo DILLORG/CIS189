@@ -241,6 +241,7 @@
                       <object class="GtkTreeView" id="questList">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
+                        <signal name="row-activated" handler="on_quest_selected" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>
@@ -321,6 +322,7 @@
                       <object class="GtkTreeView" id="shopList">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
+                        <signal name="row-activated" handler="on_item_selected" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>

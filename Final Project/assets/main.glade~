@@ -241,6 +241,7 @@
                       <object class="GtkTreeView" id="questList">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
+                        <signal name="row-activated" handler="on_quest_selected" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>
@@ -281,6 +282,7 @@
                       <object class="GtkTreeView" id="skillsList">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
+                        <signal name="row-activated" handler="on_skill_selected" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection"/>
                         </child>
@@ -508,6 +510,8 @@
       <object class="GtkLabel" id="messageLabel">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="xpad">2</property>
+        <property name="ypad">2</property>
         <property name="label" translatable="yes">label</property>
         <property name="justify">center</property>
         <property name="wrap">True</property>

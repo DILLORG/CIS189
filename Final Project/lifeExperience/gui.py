@@ -8,10 +8,12 @@ from pickle import dump, load
 from gi.repository import Gtk, GLib
 from .player import Player
 from re import match
+from .exceptions import NotEnoughGoldError
 
 ASSETS_PATH = os.path.join(os.getcwd(), 'assets')
+DATA_PATH = os.path.join(os.getcwd(), 'data')
 MAIN_GLADE_FILE = os.path.join(ASSETS_PATH, 'main.glade')
-PROFILE = os.path.join(ASSETS_PATH, 'player.profile')
+PROFILE = os.path.join(DATA_PATH, 'app.data')
 SUCCESS_COLOR = '\'#25f764\''
 FAIL_COLOR = '\'#f73416\''
 POSITIVE_INTERGER = '[1-9][0-9]*'
@@ -103,7 +105,7 @@ class MainWindow(Gtk.Window):
             with open(PROFILE, 'rb') as file:
                 self.__player = load(file)
 
-        except (OSError, IOError):
+        except (OSError, IOError, EOFError):
             self.save_profile()
 
     def edit_player(self, widget):
@@ -152,15 +154,41 @@ class MainWindow(Gtk.Window):
         self.__dueDateTb.set_text('')
         self.__questDialog.hide()
 
+    def on_quest_selected(self, treeView, row, column):
+        model = treeView.get_model()
+        name = model[row][0]
+        reward = model[row][1]
+        skill = model[row][2]
+        del model[row]
+
+        self.__player.add_gold(reward)
+        self.update_profile()
+
+        for row in self.__skillStore:
+            if row[0] == skill:
+                row[1] += 1
+
+        self.write_to_message_area(SUCCESS_COLOR, f"Completed Quest {name}")
+
     def add_skill(self, widget):
         self.__skillDialog.show()
 
     def on_skillDialog_response(self, widget):
         response = Gtk.Buildable.get_name(widget)
+
         if response == 'submitSkill':
             name = self.__skillNameTb.get_text()
-            self.__skillStore.append([name, 0])
-            self.write_to_message_area(SUCCESS_COLOR, f"Added {name} to skills")
+            skillExist = False
+            for row in self.__skillStore:
+                if row[0] == name:
+                    skillExist = True
+
+            if not skillExist:
+                self.__skillStore.append([name, 0])
+                self.write_to_message_area(SUCCESS_COLOR, f"Added '{name}' to skills")
+
+            else:
+                self.write_to_message_area(FAIL_COLOR, f"Failed to add  skill '{name}' it is already one of your skills")
 
         self.__skillNameTb.set_text('')
         self.__skillDialog.hide()
@@ -170,6 +198,7 @@ class MainWindow(Gtk.Window):
 
     def on_shopDialog_response(self, widget):
         response = Gtk.Buildable.get_name(widget)
+
         if response == 'submitItem':
             price = self.__priceTb.get_text()
             if match(POSITIVE_INTERGER, price):
@@ -181,6 +210,20 @@ class MainWindow(Gtk.Window):
         self.__itemTb.set_text('')
 
         self.__shopDialog.hide()
+
+    def on_item_selected(self, treeView, row, column):
+        model = treeView.get_model()
+        name = model[row][0]
+        price = model[row][1]
+
+        try:
+            self.__player.remove_gold(price)
+            del model[row]
+            self.write_to_message_area(SUCCESS_COLOR, f"You bought {name} enjoy your reward")
+            self.update_profile()
+
+        except NotEnoughGoldError:
+            self.write_to_message_area(FAIL_COLOR, f"{name} is to expensive")
 
     def update_profile(self):
         self.__nameLbl.set_text(self.__player.name)
