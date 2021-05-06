@@ -17,22 +17,30 @@ class Player:
     quest -- Holds all players assined quest.
     """
 
-    def __init__(self, name='', type='', difficulty=1):
+    def __init__(self, name='', type=''):
         """
         Constructs Player Object.
         :params players name and difficulty
         """
         self.__name = name
+        self.__level = 1
         self.__type = type
-        self.__difficulty = difficulty
-        self.__skills = {'Player': 1}
-        self.__quests = {}
-        self.__shop = {}
+        self.__skills = []
+        self.__quests = []
+        self.__shop = []
         self.__gold = 0
 
     @property
     def name(self):
         return self.__name
+
+    @property
+    def level(self):
+        return self.__level
+
+    @level.setter
+    def level(self, value):
+        self.__level = value
 
     @name.setter
     def name(self, value):
@@ -47,55 +55,33 @@ class Player:
         self.__type = value
 
     @property
-    def difficulty(self):
-        return self.__difficulty
-
-    @difficulty.setter
-    def difficulty(self, value):
-        self.__difficulty = value
-
-    def get_skills(self):
-        return self.__skills
-
-    @property
     def quests(self):
         return self.__quests
+
+    @quests.setter
+    def quests(self, value):
+        self.__quests = value
+
+    @property
+    def skills(self):
+        return self.__skills
+
+    @skills.setter
+    def skills(self, value):
+        self.__skills = value
 
     @property
     def shop(self):
         return self.__shop
 
+    @shop.setter
+    def shop(self, value):
+        self.__shop = value
+
     @property
     def gold(self):
         return self.__gold
 
-    def add_quest(self, questName, xp, skill, description, dueDate):
-        """
-        Assign a new quest to the player. IF a quest with the same name
-        is already assined to the player raise an error.
-        :params questName, xp, skill, description, dueDate
-        """
-
-        if questName in self.__quests.keys():
-            raise DuplicateQuestError(f"{questName} is already an assined Quest")
-
-        quest = Quest(questName, xp, skill, description, dueDate)
-        self.__quests.update({questName: quest})
-
-    def complete_quest(self, questName):
-        """
-        Complete an active quest add experienc points to
-        the related skill. IFf the quest isn't currently assined raise an
-        error.
-        :params quest name.
-        :returns none.
-        """
-        if questName not in self.__quests.keys():
-            raise QuestExistError(f"{questName} is not an assined Quest")
-
-        quest = self.__quests.pop(questName)
-        self.__skills[quest.skill] += quest.xp
-        self.__skills['Player'] += (1 * self.__difficulty)
 
     def add_gold(self, value):
         self.__gold += value
@@ -105,43 +91,8 @@ class Player:
             raise NotEnoughGoldError
         self.__gold -= value
 
-    def add_shop_item(self, itemName, price):
-        self.__shop.update({itemName: price})
-
-    def purchase_shop_item(self, itemName):
-        if itemName not in self.__shop.keys():
-            raise ShopItemExistError(f"{itemName} has not been added")
-
-        elif self.__gold < self.__shop[itemName]:
-            raise NotEnoughGoldError(f"{itemName} is to Expesive")
-
-        self.__gold -= self.__shop[itemName]
-
-    def add_skill(self, skillName):
-        """
-        Add a skill. If the skill already exist return an error.
-        :params skillName
-        :returns none.
-        """
-        if skillName in self.__skills.keys():
-            raise DuplicateSkillError(f"{skillName} has already been added")
-
-        self.__skills.update({skillName: 0})
-
-    def get_skill_level(self, skillName):
-        """
-        Get the current skill level of a given skill. throw an error if
-        the skill doesn't exist.
-        :params skillName
-        :returns skillLevel
-        """
-        if skillName not in self.__skills.keys():
-            raise SkillExistError(f"{skillName} is not a skill")
-
-        return self.__skills[skillName]
-
     def __str__(self):
-        return f"Player({self.__name}, {self.__skill}, {self.__quests.keys()})"
+        return f"Player({self.__name}, {self.__skill}, {self.__quests})"
 
     def __repr__(self):
         return f"'Player({self.__name}, {self.__skills}, {self.__quests.keys()})'"

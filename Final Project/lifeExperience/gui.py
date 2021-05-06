@@ -39,6 +39,12 @@ class MainWindow(Gtk.Window):
         __builder.add_from_file(MAIN_GLADE_FILE)
         __builder.connect_signals(self)
 
+        """
+        These Listore objects make updating and inserting data into the gui
+        easy but they get in the way of my base class. # QUESTION: would I
+        have been better of giving up on Gtk altogether and going with an HTML
+        parsing library.
+        """
         # Model and views.
         self.__skillStore = Gtk.ListStore(str, int)
         self.__skillView = __builder.get_object('skillsList')
@@ -92,18 +98,38 @@ class MainWindow(Gtk.Window):
         self.__window.show_all()
 
         self.load_profile()
-        self.update_profile()
 
     def create_tree_view_headings(self, treeView, headings):
+        """
+        Create treeView headings.
+        :params treeView object, list of heading names.
+        :returns none.
+        """
         for index, title in enumerate(headings):
             cell = Gtk.CellRendererText()
             heading = Gtk.TreeViewColumn(title, cell, text=index)
             treeView.append_column(heading)
 
     def load_profile(self):
+        """
+        Load the player's profile from the data folder.
+        :params none.
+        :returns none.
+        """
         try:
             with open(PROFILE, 'rb') as file:
                 self.__player = load(file)
+
+                for skill in self.__player.skills:
+                    self.__skillStore.append(skill)
+
+                for quest in self.__player.quests:
+                    self.__questStore.append(quest)
+
+                for item in self.__player.shop:
+                    self.__shopStore.append(item)
+
+                self.update_profile()
 
         except (OSError, IOError, EOFError):
             self.save_profile()
@@ -124,9 +150,19 @@ class MainWindow(Gtk.Window):
         self.__editPlayer.hide()
 
     def add_quest(self, widget):
+        """
+        Show Quest dialog.
+        :params none.
+        :returns none.
+        """
         self.__questDialog.show()
 
     def on_questDialog_response(self, widget):
+        """
+        Process questForm
+        :params none.
+        :returns none.
+        """
         response = Gtk.Buildable.get_name(widget)
         if response == 'submitQuest':
 
@@ -155,6 +191,10 @@ class MainWindow(Gtk.Window):
         self.__questDialog.hide()
 
     def on_quest_selected(self, treeView, row, column):
+        """
+        Quest completed add gold and skill points.
+        :params treeView object, row selected, column.
+        """
         model = treeView.get_model()
         name = model[row][0]
         reward = model[row][1]
@@ -162,8 +202,10 @@ class MainWindow(Gtk.Window):
         del model[row]
 
         self.__player.add_gold(reward)
+        self.__player.level += 1
         self.update_profile()
 
+        # Search for relevant skill
         for row in self.__skillStore:
             if row[0] == skill:
                 row[1] += 1
@@ -171,14 +213,24 @@ class MainWindow(Gtk.Window):
         self.write_to_message_area(SUCCESS_COLOR, f"Completed Quest {name}")
 
     def add_skill(self, widget):
+
         self.__skillDialog.show()
 
     def on_skillDialog_response(self, widget):
+        """
+        Process skill form.
+        :params calling widget.
+        :returns none.
+        """
+
+        # Button that was clicked.
         response = Gtk.Buildable.get_name(widget)
 
         if response == 'submitSkill':
             name = self.__skillNameTb.get_text()
             skillExist = False
+
+            # Check if the player if the player already has this skill.
             for row in self.__skillStore:
                 if row[0] == name:
                     skillExist = True
@@ -194,9 +246,18 @@ class MainWindow(Gtk.Window):
         self.__skillDialog.hide()
 
     def add_shop_item(self, widget):
+        """
+        Display shop dialog.
+        :params none.
+        :returns none.
+        """
         self.__shopDialog.show()
 
     def on_shopDialog_response(self, widget):
+        """
+        Process shop form and add item.
+        :params calling widget.
+        """
         response = Gtk.Buildable.get_name(widget)
 
         if response == 'submitItem':
@@ -219,23 +280,64 @@ class MainWindow(Gtk.Window):
         try:
             self.__player.remove_gold(price)
             del model[row]
-            self.write_to_message_area(SUCCESS_COLOR, f"You bought {name} enjoy your reward")
+            self.write_to_message_area(SUCCESS_COLOR, f"You bought a '{name}' enjoy your reward")
             self.update_profile()
 
         except NotEnoughGoldError:
-            self.write_to_message_area(FAIL_COLOR, f"{name} is to expensive")
+            self.write_to_message_area(FAIL_COLOR, f"'{name}' is to expensive")
 
     def update_profile(self):
+        """
+        Update the profile page so that it shows the current data members of
+        the player object.
+        :params none.
+        :returns none.
+        """
         self.__nameLbl.set_text(self.__player.name)
-        self.__levelLbl.set_text(str(self.__player.get_skill_level('Player')))
+        self.__levelLbl.set_text(str(self.__player.level))
         self.__goldLbl.set_text(str(self.__player.gold))
         self.__typeLbl.set_text(str(self.__player.type))
 
     def save_profile(self):
+        """
+        Use Pickle to save the player's status.
+        Gtk.Listore objects are incompatiable so convert to list.
+        # TODO: See if there is a more efficent way of doing this.
+        """
+        skills = []
+        quest = []
+        shop = []
+
+        for row in self.__skillStore:
+            name = row[0]
+            level = row[1]
+            skills.append([name, level])
+
+        for row in self.__shopStore:
+            name = row[0]
+            price = row[1]
+            shop.append([name, price])
+
+        for row in self.__questStore:
+            name = row[0]
+            gold = row[1]
+            skill = row[2]
+            date = row[3]
+            quest.append([name, gold, skill, date])
+
+        self.__player.skills = skills
+        self.__player.shop = shop
+
         with open(PROFILE, 'wb') as file:
             dump(self.__player, file)
 
     def write_to_message_area(self, color, message):
+        """
+        Write any error or success message to the Message Area
+        :params color background color of message,
+        message text to display
+        :returns none.
+        """
         markup = f"<span background={color}>{message}</span>"
         self.__messageLabel.set_markup(markup)
         self.__messageArea.popup()
@@ -243,6 +345,11 @@ class MainWindow(Gtk.Window):
 
     @threaded
     def message_time_out(self):
+        """
+        Hide the message area after a time.
+        :params none.
+        :returns none.
+        """
         time.sleep(3)
         GLib.idle_add(self.__messageArea.popdown)
 
@@ -257,4 +364,9 @@ class MainWindow(Gtk.Window):
         sys.exit()
 
     def run_app(self):
+        """
+        Run the main loop.
+        :parms none.
+        :returns none.
+        """
         Gtk.main()

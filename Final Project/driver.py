@@ -1,3 +1,10 @@
+"""
+Program: lifeExperience
+Author: Dylan Kennedy
+Last date modified: 05/05/2021
+
+Event orgainizer that gamifys mundane tasks.
+"""
 from lifeExperience.gui import MainWindow
 
 
