@@ -1,4 +1,5 @@
 import gi
+gi.require_version('Gtk', '3.0')
 import os
 import sys
 import threading
@@ -9,6 +10,8 @@ from gi.repository import Gtk, GLib
 from .player import Player
 from re import match
 from .exceptions import NotEnoughGoldError
+from .exceptions import DuplicateSkillError, DuplicateQuestError
+from .models import SkillListStore, QuestListStore, ShopListStore
 
 ASSETS_PATH = os.path.join(os.getcwd(), 'assets')
 DATA_PATH = os.path.join(os.getcwd(), 'data')
@@ -40,25 +43,26 @@ class MainWindow(Gtk.Window):
         __builder.connect_signals(self)
 
         """
-        These Listore objects make updating and inserting data into the gui
+        These ListStore objects make updating and inserting data into the gui
         easy but they get in the way of my base class. # QUESTION: would I
         have been better of giving up on Gtk altogether and going with an HTML
         parsing library.
         """
+
         # Model and views.
-        self.__skillStore = Gtk.ListStore(str, int)
+        self.__skillStore = SkillListStore()
         self.__skillView = __builder.get_object('skillsList')
         self.__skillView.set_model(self.__skillStore)
         self.create_tree_view_headings(self.__skillView, ['Skill Name',
                                                           'Level'])
-        self.__questStore = Gtk.ListStore(str, int, str, str)
+        self.__questStore = QuestListStore()
         self.__questView = __builder.get_object('questList')
         self.__questView.set_model(self.__questStore)
         self.create_tree_view_headings(self.__questView, ['Quest Name',
                                                           'Gold Reward',
                                                           'Skill',
                                                           'Date Due'])
-        self.__shopStore = Gtk.ListStore(str, int)
+        self.__shopStore = ShopListStore()
         self.__shopView = __builder.get_object('shopList')
         self.__shopView.set_model(self.__shopStore)
         self.create_tree_view_headings(self.__shopView, ['Item Name', 'Price'])
@@ -95,8 +99,8 @@ class MainWindow(Gtk.Window):
         # Message Area.
         self.__messageArea = __builder.get_object('messageArea')
         self.__messageLabel = __builder.get_object("messageLabel")
-        self.__window.show_all()
 
+        self.__window.show_all()
         self.load_profile()
 
     def create_tree_view_headings(self, treeView, headings):
@@ -170,24 +174,28 @@ class MainWindow(Gtk.Window):
 
             if(match(POSITIVE_INTERGER, gold)):
                 dueDate = self.__dueDateTb.get_text()
+                gold = int(gold)
 
                 try:
                     dueDate = datetime.strptime(dueDate, '%m-%d-%Y %H:%M')
-                    questName = self.__questNameTb.get_text()
+                    name = self.__questNameTb.get_text()
                     skill = self.__skillCb.get_active_text()
-                    self.__questStore.append([questName, int(gold), skill,
-                                              str(dueDate)])
+                    self.__questStore.add_quest(name, gold, skill, str(dueDate))
 
-                    self.write_to_message_area(SUCCESS_COLOR, f"The Quest {questName} has been added")
+                    self.write_to_message_area(SUCCESS_COLOR, f"The Quest {name} has been added")
 
                 except ValueError:
                     self.write_to_message_area(FAIL_COLOR, "Improper Date please input as mm-dd-yyyy hh:mm format")
+
+                except DuplicateQuestError as e:
+                    self.write_to_message_area(FAIL_COLOR, f"{e}")
 
             else:
                 self.write_to_message_area(FAIL_COLOR, f"{gold} is an invalid value for Gold")
 
         self.__questNameTb.set_text('')
         self.__dueDateTb.set_text('')
+        self.__goldTb.set_text('')
         self.__questDialog.hide()
 
     def on_quest_selected(self, treeView, row, column):
@@ -205,15 +213,10 @@ class MainWindow(Gtk.Window):
         self.__player.level += 1
         self.update_profile()
 
-        # Search for relevant skill
-        for row in self.__skillStore:
-            if row[0] == skill:
-                row[1] += 1
-
+        self.__skillStore.add_points_to_skill(skill, 1)
         self.write_to_message_area(SUCCESS_COLOR, f"Completed Quest {name}")
 
     def add_skill(self, widget):
-
         self.__skillDialog.show()
 
     def on_skillDialog_response(self, widget):
@@ -228,19 +231,13 @@ class MainWindow(Gtk.Window):
 
         if response == 'submitSkill':
             name = self.__skillNameTb.get_text()
-            skillExist = False
 
-            # Check if the player if the player already has this skill.
-            for row in self.__skillStore:
-                if row[0] == name:
-                    skillExist = True
-
-            if not skillExist:
-                self.__skillStore.append([name, 0])
+            try:
+                self.__skillStore.add_skill(name)
                 self.write_to_message_area(SUCCESS_COLOR, f"Added '{name}' to skills")
 
-            else:
-                self.write_to_message_area(FAIL_COLOR, f"Failed to add  skill '{name}' it is already one of your skills")
+            except DuplicateSkillError as e:
+                self.write_to_message_area(FAIL_COLOR, f"{e}")
 
         self.__skillNameTb.set_text('')
         self.__skillDialog.hide()
@@ -264,7 +261,8 @@ class MainWindow(Gtk.Window):
             price = self.__priceTb.get_text()
             if match(POSITIVE_INTERGER, price):
                 name = self.__itemTb.get_text()
-                self.__shopStore.append([name, int(price)])
+                price = int(price)
+                self.__shopStore.add_item(name, price)
                 self.write_to_message_area(SUCCESS_COLOR, f"Added {name} to shop.")
 
         self.__priceTb.set_text('')
@@ -302,7 +300,7 @@ class MainWindow(Gtk.Window):
         """
         Use Pickle to save the player's status.
         Gtk.Listore objects are incompatiable so convert to list.
-        # TODO: See if there is a more efficent way of doing this.
+        # TODO: See if there is a more efficent way of doing self.
         """
         skills = []
         quest = []

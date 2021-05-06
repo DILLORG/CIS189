@@ -1,9 +1,3 @@
-from .quest import Quest
-from .exceptions import DuplicateQuestError
-from .exceptions import QuestExistError
-from .exceptions import DuplicateSkillError
-from .exceptions import SkillExistError
-from .exceptions import ShopItemExistError
 from .exceptions import NotEnoughGoldError
 
 
@@ -92,7 +86,7 @@ class Player:
         self.__gold -= value
 
     def __str__(self):
-        return f"Player({self.__name}, {self.__skill}, {self.__quests})"
+        return f"Player({self.__name}, {self.__level}, {self.__type}, {self.__skills}, {self.__quests}, {self.__shop})"
 
     def __repr__(self):
-        return f"'Player({self.__name}, {self.__skills}, {self.__quests.keys()})'"
+        return f"'Player({self.__name}, {self.__level}, {self.__type}, {self.__skills}, {self.__quests}, {self.__shop})'"

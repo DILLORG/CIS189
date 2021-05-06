@@ -1,4 +1,5 @@
 from lifeExperience.player import Player
+from lifeExperience.models import SkillListStore, QuestListStore, ShopListStore
 from lifeExperience.exceptions import DuplicateQuestError, DuplicateSkillError
 from lifeExperience.exceptions import QuestExistError, SkillExistError
 from lifeExperience.exceptions import ShopItemExistError
@@ -11,58 +12,44 @@ class PlayerTest(unittest.TestCase):
 
     def setUp(self):
         self.testPlayer = Player('Dylan', 'Programer')
-        self.testPlayer.add_skill('Strength')
-        self.testPlayer.add_quest('Excersise', 500, 'Strength', 'Go Excersise', '01-01-01')
-        self.testPlayer.add_quest('Walk', 50, 'Strength', 'Go for a walk', '01-01-01')
-        self.testPlayer.complete_quest('Walk')
-        self.testPlayer.add_shop_item('Bike', 500)
+        self.testSkillList = SkillListStore()
+        self.testQuestList = QuestListStore()
+        self.testShopList = ShopListStore()
+        self.testSkillList.add_skill('Programing')
+        self.testQuestList.add_quest('Finish Final', 500, 'Programing', '05-06-2021 23:59')
 
     def tearDown(self):
         del self.testPlayer
+        del self.testSkillList
+        del self.testQuestList
+        del self.testShopList
 
-    def test_player_add_quest_duplicate(self):
-        with self.assertRaises(DuplicateQuestError):
-            self.testPlayer.add_quest('Excersise', 500, 'Strength', 'Go Excersise', '01-01-01')
-
-    def test_player_add_skill_duplicate(self):
+    def test_add_skill_exist(self):
         with self.assertRaises(DuplicateSkillError):
-            self.testPlayer.add_skill('Strength')
+            self.testSkillList.add_skill('Programing')
 
-    def test_player_add_skill(self):
-        self.testPlayer.add_skill('Art')
-        expected = 0
-        actual = self.testPlayer.get_skill_level('Art')
-        self.assertEqual(expected, actual)
-
-    def test_get_skill_level_no_skill(self):
+    def test_get_skill_doesnt_exist(self):
         with self.assertRaises(SkillExistError):
-            self.testPlayer.get_skill_level('Math')
+            self.testSkillList.get_skill('Gardening')
 
-    def test_player_complete_quest_no_quest(self):
+    def test_add_quest_exist(self):
+        with self.assertRaises(DuplicateQuestError):
+            self.testQuestList.add_quest('Finish Final', 500, 'Programing', '05-06-2021 23:59')
+
+    def test_get_quest_doesnt_exist(self):
         with self.assertRaises(QuestExistError):
-            self.testPlayer.complete_quest('Take Out Trash')
+            self.testQuestList.get_quest('Clean Room')
 
-    def test_player_complete_quest(self):
-        self.testPlayer.complete_quest('Excersise')
-        expected = 550
-        actual = self.testPlayer.get_skill_level('Strength')
-        self.assertEqual(expected, actual)
-
-    def test_purchase_shop_item_no_item(self):
-        with self.assertRaises(ShopItemExistError):
-            self.testPlayer.purchase_shop_item('Guitar')
-
-    def test_purchase_shop_item_to_expensive(self):
+    def test_player_too_little_gold(self):
         with self.assertRaises(NotEnoughGoldError):
-            self.testPlayer.purchase_shop_item('Bike')
+            self.testPlayer.remove_gold(500)
 
-    def test_purchase_shop_item(self):
-        self.testPlayer.add_gold(500)
-        self.testPlayer.purchase_shop_item('Bike')
-        self.assertEqual(self.testPlayer.gold, 0)
+    def test_get_shop_doesnt_exist(self):
+        with self.assertRaises(ShopItemExistError):
+            self.testShopList.get_item('Banana')
 
     def test_player_save_profile(self):
-        fileName = 'playerTest.profile'
+        fileName = 'playerTest.data'
 
         with open(fileName, 'wb') as file:
             dump(self.testPlayer, file)
